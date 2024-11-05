@@ -1,3 +1,5 @@
+package br.edu.ifsul.samuellpoo;
+
 import javax.persistence.*;
 import java.util.Date;
 

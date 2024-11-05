@@ -1,3 +1,5 @@
+package br.edu.ifsul.samuellpoo;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -10,6 +12,9 @@ public class Fornecedor {
 
     @Column(length = 100, nullable = false)
     private String nome;
+
+    @Column(length = 14, nullable = false) // Adicione a anotação de coluna para o CNPJ
+    private String cnpj; // Adicione este campo
 
     @OneToMany(mappedBy = "fornecedor", cascade = CascadeType.ALL)
     private List<Produto> produtos;
@@ -30,6 +35,14 @@ public class Fornecedor {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getCnpj() {
+        return cnpj; // Adicione o getter
+    }
+
+    public void setCnpj(String cnpj) { // Adicione o setter
+        this.cnpj = cnpj;
     }
 
     public List<Produto> getProdutos() {
