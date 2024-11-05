@@ -15,7 +15,7 @@ public class Produto {
     @Column(nullable = false)
     private Double preco;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST) // Adicionando CascadeType.PERSIST
     @JoinColumn(name = "fornecedor_id", nullable = false)
     private Fornecedor fornecedor;
 

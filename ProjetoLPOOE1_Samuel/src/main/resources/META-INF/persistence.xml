@@ -6,15 +6,21 @@
     <persistence-unit name="ProjetoLPOOE1_SamuelPU">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>br.edu.ifsul.samuellpoo.Fornecedor</class>
-        <class>br.edu.ifsul.samuellpoo.Produto</class>
-        <class>br.edu.ifsul.samuellpoo.Pedido</class>
+	<class>br.edu.ifsul.samuellpoo.Produto</class>
+	<class>br.edu.ifsul.samuellpoo.Pedido</class>
+
         <properties>
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/seubanco"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/ProjetoLPOOE1_Samuel"/>
             <property name="javax.persistence.jdbc.user" value="postgres"/>
             <property name="javax.persistence.jdbc.password" value="postgres"/>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.show_sql" value="true"/>
+	    <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.format_sql" value="true"/>
+	    <property name="hibernate.use_sql_comments" value="true"/>
+	    <property name="hibernate.hbm2ddl.auto" value="update"/>
+
         </properties>
     </persistence-unit>
 </persistence>
