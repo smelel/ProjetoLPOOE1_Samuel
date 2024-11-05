@@ -13,8 +13,8 @@ public class Fornecedor {
     @Column(length = 100, nullable = false)
     private String nome;
 
-    @Column(length = 14, nullable = false) // Adicione a anotação de coluna para o CNPJ
-    private String cnpj; // Adicione este campo
+    @Column(length = 14, nullable = false)
+    private String cnpj;
 
     @OneToMany(mappedBy = "fornecedor", cascade = CascadeType.ALL)
     private List<Produto> produtos;
@@ -38,10 +38,10 @@ public class Fornecedor {
     }
 
     public String getCnpj() {
-        return cnpj; // Adicione o getter
+        return cnpj;
     }
 
-    public void setCnpj(String cnpj) { // Adicione o setter
+    public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
     }
 

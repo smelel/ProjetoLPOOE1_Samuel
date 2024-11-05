@@ -23,10 +23,12 @@ public class ProdutoTest {
         emf = Persistence.createEntityManagerFactory("ProjetoLPOOE1_SamuelPU");
         em = emf.createEntityManager();
         
+        // Criação do fornecedor
         fornecedor = new Fornecedor();
         fornecedor.setNome("Fornecedor Teste");
         fornecedor.setCnpj("12.345.678/0001-99"); 
 
+        // Criação do produto e associação ao fornecedor
         produto = new Produto();
         produto.setNome("Produto Teste");
         produto.setPreco(100.0);
@@ -61,25 +63,27 @@ public class ProdutoTest {
         assertEquals(fornecedor, produto.getFornecedor());
     }
 
-@Test
-public void testPersistProduto() {
-    EntityManager em = emf.createEntityManager();
-    em.getTransaction().begin();
+    @Test
+    public void testPersistProduto() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
 
-    // Criando o fornecedor com o campo CNPJ preenchido
-    Fornecedor fornecedor = new Fornecedor();
-    fornecedor.setNome("Fornecedor Teste");
-    fornecedor.setCnpj("12345678000199"); // Definindo o CNPJ
+        // Criando o fornecedor com o campo CNPJ preenchido
+        Fornecedor fornecedor = new Fornecedor();
+        fornecedor.setNome("Fornecedor Teste");
+        fornecedor.setCnpj("12345678000199"); // Definindo o CNPJ
 
-    // Criando o produto e associando o fornecedor
-    Produto produto = new Produto();
-    produto.setNome("Produto Teste");
-    produto.setPreco(99.99);
-    produto.setFornecedor(fornecedor);
+        // Criando o produto e associando o fornecedor
+        Produto produto = new Produto();
+        produto.setNome("Produto Teste");
+        produto.setPreco(99.99);
+        produto.setFornecedor(fornecedor);
 
-    em.persist(produto); // Persistindo o produto e, automaticamente, o fornecedor
-    em.getTransaction().commit();
+        // Persistindo o fornecedor antes de persistir o produto
+        em.persist(fornecedor); // Persistindo o fornecedor
+        em.persist(produto); // Persistindo o produto, que referencia o fornecedor
+        em.getTransaction().commit();
 
-    em.close();
-}
+        em.close();
+    }
 }
