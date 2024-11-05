@@ -1,4 +1,5 @@
-import javax.persistence.*;
+import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_livro")
@@ -10,8 +11,8 @@ public class Livro {
     @Column(length = 100, nullable = false)
     private String titulo;
 
-    @ManyToOne
-    private Autor autor;
+    @OneToMany(mappedBy = "livro")
+    private List<Emprestimo> emprestimos;
 
-    // getters e setters
+    // Getters e setters
 }

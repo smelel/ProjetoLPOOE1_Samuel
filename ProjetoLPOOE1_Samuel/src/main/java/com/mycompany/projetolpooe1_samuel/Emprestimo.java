@@ -1,4 +1,4 @@
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -9,13 +9,15 @@ public class Emprestimo {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "livro_id", nullable = false)
     private Livro livro;
 
-    @Column(nullable = false)
     private LocalDate dataEmprestimo;
-
-    @Column(nullable = false)
     private LocalDate dataDevolucao;
 
-    // getters e setters
+    // Getters e setters
 }

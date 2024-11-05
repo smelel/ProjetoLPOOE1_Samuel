@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.1">
-    <persistence-unit name="ProjetoLPOOE1_SamuelPU" transaction-type="RESOURCE_LOCAL">
-        <class>Livro</class>
-        <class>Autor</class>
-        <class>Emprestimo</class>
+    <persistence-unit name="ProjetoLPOOE1_SamuelPU">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>com.projeto.Usuario</class>
+        <class>com.projeto.Livro</class>
+        <class>com.projeto.Emprestimo</class>
         <properties>
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/ProjetoLPOOE1_Samuel"/>
-            <property name="javax.persistence.jdbc.user" value="[SEU_USUARIO]"/>
-            <property name="javax.persistence.jdbc.password" value="[SUA_SENHA]"/>
-            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <!-- Configurações de conexão -->
+           <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/ProjetoLPOOE1_Samuel"/>
+	<property name="javax.persistence.jdbc.user" value="vanessalagomachado"/>
+	<property name="javax.persistence.jdbc.password" value="sua_senha_correta"/>
+	<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+	
+
+            <!-- Opções de JPA -->
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
