@@ -52,5 +52,5 @@ PostgreSQL (com pgAdmin opcional para administração do banco de dados)
 Configuração do Banco de Dados
 Este projeto se conecta a um banco de dados PostgreSQL. As configurações de conexão estão localizadas no arquivo application.properties no diretório src/main/resources.
 
-Os testes estão localizados no diretório src/test/java e podem ser executados com:
+Os testes estão localizados no diretório src/test/java.
 
