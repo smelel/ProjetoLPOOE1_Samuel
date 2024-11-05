@@ -14,7 +14,7 @@ public class ProdutoTest {
     public void setUp() {
         fornecedor = new Fornecedor();
         fornecedor.setNome("Fornecedor Teste");
-        fornecedor.setCnpj("12.345.678/0001-99"); // Agora deve funcionar
+        fornecedor.setCnpj("12.345.678/0001-99"); 
 
         produto = new Produto();
         produto.setNome("Produto Teste");
