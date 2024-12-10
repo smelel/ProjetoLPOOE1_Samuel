@@ -17,8 +17,6 @@ public class Pedido {
     @JoinColumn(name = "produto_id", nullable = false)
     private Produto produto;
 
-    // Getters e Setters
-
     public Long getId() {
         return id;
     }
@@ -41,5 +39,10 @@ public class Pedido {
 
     public void setProduto(Produto produto) {
         this.produto = produto;
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido: Produto - " + produto.getNome() + ", Data: " + dataPedido;
     }
 }

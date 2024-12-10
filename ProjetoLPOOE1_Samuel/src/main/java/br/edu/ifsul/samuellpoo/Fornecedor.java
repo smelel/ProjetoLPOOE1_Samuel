@@ -20,7 +20,6 @@ public class Fornecedor {
     private List<Produto> produtos;
 
     // Getters e Setters
-
     public Long getId() {
         return id;
     }
@@ -51,5 +50,10 @@ public class Fornecedor {
 
     public void setProdutos(List<Produto> produtos) {
         this.produtos = produtos;
+    }
+
+    @Override
+    public String toString() {
+        return "Fornecedor: " + nome + " (CNPJ: " + cnpj + ")";
     }
 }
