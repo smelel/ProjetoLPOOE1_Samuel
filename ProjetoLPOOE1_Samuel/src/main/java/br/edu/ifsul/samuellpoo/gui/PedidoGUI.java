@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,152 +15,201 @@ import java.util.List;
 
 public class PedidoGUI extends JFrame {
     private EntityManager em;
-    private JList<Pedido> listPedidos;
-    private DefaultListModel<Pedido> listModel;
-    private JComboBox<Produto> comboBoxProdutos;
+    private JTable pedidoTable;
+    private JTextField searchField;
+    private JButton addButton, editButton, deleteButton, searchButton;
 
     public PedidoGUI() {
         setTitle("Gerenciar Pedidos");
-        setSize(600, 400);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setSize(600, 400);
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("ProjetoLPOOE1_SamuelPU");
         em = emf.createEntityManager();
 
         initComponents();
+        atualizarLista();
+        setVisible(true);
     }
 
     private void initComponents() {
-        JPanel panel = new JPanel(new BorderLayout());
-        listModel = new DefaultListModel<>();
-        listPedidos = new JList<>(listModel);
-        atualizarLista();
-        panel.add(new JScrollPane(listPedidos), BorderLayout.CENTER);
+        pedidoTable = new JTable();
+        searchField = new JTextField(15);
+        searchButton = new JButton("Buscar");
+        addButton = new JButton("Adicionar");
+        editButton = new JButton("Editar");
+        deleteButton = new JButton("Excluir");
 
-        JPanel buttonPanel = new JPanel();
-        JButton btnAdicionar = new JButton("Adicionar");
-        JButton btnEditar = new JButton("Editar");
-        JButton btnExcluir = new JButton("Excluir");
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchPanel.add(new JLabel("Pesquisar (Produto):"));
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
 
-        buttonPanel.add(btnAdicionar);
-        buttonPanel.add(btnEditar);
-        buttonPanel.add(btnExcluir);
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
 
-        add(panel, BorderLayout.CENTER);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        buttonPanel.add(addButton, gbc);
+
+        gbc.gridx = 1;
+        buttonPanel.add(editButton, gbc);
+
+        gbc.gridx = 2;
+        buttonPanel.add(deleteButton, gbc);
+
+        setLayout(new BorderLayout(10, 10));
+        add(searchPanel, BorderLayout.NORTH);
+        add(new JScrollPane(pedidoTable), BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        btnAdicionar.addActionListener(e -> adicionarPedido());
-        btnEditar.addActionListener(e -> editarPedido());
-        btnExcluir.addActionListener(e -> excluirPedido());
+        searchButton.addActionListener(e -> filtrarPedidos());
+        addButton.addActionListener(e -> adicionarPedido());
+        editButton.addActionListener(e -> editarPedido());
+        deleteButton.addActionListener(e -> excluirPedido());
     }
 
     private void atualizarLista() {
-        listModel.clear();
         List<Pedido> pedidos = em.createQuery("FROM Pedido", Pedido.class).getResultList();
-        pedidos.forEach(listModel::addElement);
+        atualizarTabela(pedidos);
     }
 
-    private void carregarProdutosNoComboBox() {
-        comboBoxProdutos = new JComboBox<>();
-        List<Produto> produtos = em.createQuery("FROM Produto", Produto.class).getResultList();
-        produtos.forEach(comboBoxProdutos::addItem);
+    private void atualizarTabela(List<Pedido> pedidos) {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Data do Pedido", "Produto"}, 0);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        for (Pedido pedido : pedidos) {
+            model.addRow(new Object[]{
+                    pedido.getId(),
+                    sdf.format(pedido.getDataPedido()),
+                    pedido.getProduto().getNome()
+            });
+        }
+        pedidoTable.setModel(model);
+    }
+
+    private void filtrarPedidos() {
+        String filtro = searchField.getText().trim();
+        List<Pedido> pedidos;
+
+        if (filtro.isEmpty()) {
+            pedidos = em.createQuery("FROM Pedido", Pedido.class).getResultList();
+        } else {
+            pedidos = em.createQuery(
+                            "FROM Pedido p WHERE p.produto.nome LIKE :nome", Pedido.class)
+                    .setParameter("nome", "%" + filtro + "%")
+                    .getResultList();
+        }
+        atualizarTabela(pedidos);
     }
 
     private void adicionarPedido() {
-        try {
-            carregarProdutosNoComboBox();
+        JComboBox<Produto> produtoComboBox = new JComboBox<>();
+        carregarProdutos(produtoComboBox);
 
-            JTextField campoData = new JTextField();
-            comboBoxProdutos.setSelectedIndex(0);
+        JPanel panel = new JPanel(new GridLayout(2, 2));
+        panel.add(new JLabel("Data do Pedido (dd/MM/yyyy):"));
+        JFormattedTextField dataField = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
+        dataField.setColumns(10);
+        panel.add(dataField);
+        panel.add(new JLabel("Produto:"));
+        panel.add(produtoComboBox);
 
-            Object[] inputs = {
-                "Data do Pedido (dd/MM/yyyy):", campoData,
-                "Produto:", comboBoxProdutos
-            };
+        int option = JOptionPane.showConfirmDialog(this, panel, "Adicionar Pedido", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            String dataStr = dataField.getText().trim();
+            Produto produtoSelecionado = (Produto) produtoComboBox.getSelectedItem();
 
-            int result = JOptionPane.showConfirmDialog(this, inputs, "Adicionar Pedido", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                String dataStr = campoData.getText();
-                Produto produtoSelecionado = (Produto) comboBoxProdutos.getSelectedItem();
-
-                if (dataStr != null && produtoSelecionado != null) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    Date dataPedido = sdf.parse(dataStr);
-
-                    em.getTransaction().begin();
-
-                    Pedido pedido = new Pedido();
-                    pedido.setDataPedido(dataPedido);
-                    pedido.setProduto(produtoSelecionado);
-
-                    em.persist(pedido);
-                    em.getTransaction().commit();
-                    atualizarLista();
-                }
+            if (dataStr.isEmpty() || produtoSelecionado == null) {
+                JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao adicionar pedido: " + ex.getMessage());
-            em.getTransaction().rollback();
+
+            try {
+                Date dataPedido = new SimpleDateFormat("dd/MM/yyyy").parse(dataStr);
+
+                em.getTransaction().begin();
+                Pedido pedido = new Pedido();
+                pedido.setDataPedido(dataPedido);
+                pedido.setProduto(produtoSelecionado);
+                em.persist(pedido);
+                em.getTransaction().commit();
+
+                JOptionPane.showMessageDialog(this, "Pedido adicionado com sucesso!");
+                atualizarLista();
+            } catch (Exception ex) {
+                em.getTransaction().rollback();
+                JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void carregarProdutos(JComboBox<Produto> comboBox) {
+        List<Produto> produtos = em.createQuery("FROM Produto", Produto.class).getResultList();
+        for (Produto p : produtos) {
+            comboBox.addItem(p);
         }
     }
 
     private void editarPedido() {
-        try {
-            Pedido pedido = listPedidos.getSelectedValue();
-            if (pedido != null) {
-                carregarProdutosNoComboBox();
+        int selectedRow = pedidoTable.getSelectedRow();
+        if (selectedRow != -1) {
+            Long pedidoId = (Long) pedidoTable.getValueAt(selectedRow, 0);
+            Pedido pedido = em.find(Pedido.class, pedidoId);
 
-                JTextField campoData = new JTextField(new SimpleDateFormat("dd/MM/yyyy").format(pedido.getDataPedido()));
-                comboBoxProdutos.setSelectedItem(pedido.getProduto());
+            JComboBox<Produto> produtoComboBox = new JComboBox<>();
+            carregarProdutos(produtoComboBox);
+            produtoComboBox.setSelectedItem(pedido.getProduto());
 
-                Object[] inputs = {
-                    "Data do Pedido (dd/MM/yyyy):", campoData,
-                    "Produto:", comboBoxProdutos
-                };
+            JPanel panel = new JPanel(new GridLayout(2, 2));
+            panel.add(new JLabel("Data do Pedido (dd/MM/yyyy):"));
+            JFormattedTextField dataField = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
+            dataField.setText(new SimpleDateFormat("dd/MM/yyyy").format(pedido.getDataPedido()));
+            dataField.setColumns(10);
+            panel.add(dataField);
+            panel.add(new JLabel("Produto:"));
+            panel.add(produtoComboBox);
 
-                int result = JOptionPane.showConfirmDialog(this, inputs, "Editar Pedido", JOptionPane.OK_CANCEL_OPTION);
-                if (result == JOptionPane.OK_OPTION) {
-                    String dataStr = campoData.getText();
-                    Produto produtoSelecionado = (Produto) comboBoxProdutos.getSelectedItem();
+            int option = JOptionPane.showConfirmDialog(this, panel, "Editar Pedido", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                try {
+                    Date dataPedido = new SimpleDateFormat("dd/MM/yyyy").parse(dataField.getText().trim());
 
-                    if (dataStr != null && produtoSelecionado != null) {
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                        Date dataPedido = sdf.parse(dataStr);
+                    em.getTransaction().begin();
+                    pedido.setDataPedido(dataPedido);
+                    pedido.setProduto((Produto) produtoComboBox.getSelectedItem());
+                    em.merge(pedido);
+                    em.getTransaction().commit();
 
-                        em.getTransaction().begin();
-
-                        pedido.setDataPedido(dataPedido);
-                        pedido.setProduto(produtoSelecionado);
-
-                        em.merge(pedido);
-                        em.getTransaction().commit();
-                        atualizarLista();
-                    }
+                    JOptionPane.showMessageDialog(this, "Pedido atualizado com sucesso!");
+                    atualizarLista();
+                } catch (Exception ex) {
+                    em.getTransaction().rollback();
+                    JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "Selecione um pedido.");
             }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao editar pedido: " + ex.getMessage());
-            em.getTransaction().rollback();
         }
     }
 
     private void excluirPedido() {
-        try {
-            Pedido pedido = listPedidos.getSelectedValue();
-            if (pedido != null) {
-                em.getTransaction().begin();
-                em.remove(em.find(Pedido.class, pedido.getId()));
-                em.getTransaction().commit();
-                atualizarLista();
-            } else {
-                JOptionPane.showMessageDialog(this, "Selecione um pedido.");
+        int selectedRow = pedidoTable.getSelectedRow();
+        if (selectedRow != -1) {
+            Long pedidoId = (Long) pedidoTable.getValueAt(selectedRow, 0);
+            Pedido pedido = em.find(Pedido.class, pedidoId);
+
+            int option = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este pedido?", "Excluir", JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
+                try {
+                    em.getTransaction().begin();
+                    em.remove(pedido);
+                    em.getTransaction().commit();
+                    JOptionPane.showMessageDialog(this, "Pedido excluído com sucesso!");
+                    atualizarLista();
+                } catch (Exception ex) {
+                    em.getTransaction().rollback();
+                    JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                }
             }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao excluir pedido: " + ex.getMessage());
-            em.getTransaction().rollback();
         }
     }
 }
