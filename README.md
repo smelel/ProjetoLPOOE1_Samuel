@@ -1,56 +1,32 @@
 # ProjetoLPOOE1_Samuel
 
-Este projeto foi desenvolvido para a disciplina de Linguagem de Programação Orientada a Objetos e tem como objetivo principal a prática de mapeamento objeto-relacional em Java, utilizando frameworks e tecnologias modernas, como JDBC, JPA e PostgreSQL. O projeto também integra o uso de ferramentas como Maven para gerenciar dependências e GitHub para versionamento.
+**Descrição do Projeto**
+Este projeto consiste em um sistema de gerenciamento com interface gráfica para Fornecedores, Produtos e Pedidos, desenvolvido em Java com integração ao banco de dados PostgreSQL utilizando JPA (Java Persistence API). A interface foi construída com Swing, permitindo operações CRUD (Create, Read, Update, Delete) para todas as entidades.
 
-O Projeto consiste em um sistema básico para o gerenciamento de dados de fornecedores, produtos e pedidos. Os dados são armazenados em um banco de dados PostgreSQL e acessados via JDBC e JPA, permitindo operações CRUD para as entidades principais.
+**Funcionalidades**
+Fornecedores:
+Cadastrar, visualizar, editar e excluir fornecedores.
+Produtos:
+Cadastrar produtos associando-os a fornecedores existentes.
+Editar, excluir e visualizar produtos.
+Pedidos:
+Registrar pedidos associando-os a produtos existentes.
+Editar, excluir e visualizar pedidos.
+Filtros de Pesquisa:
+Pesquisa dinâmica por nome nas tabelas de fornecedores, produtos e pedidos.
 
-O projeto inclui as seguintes funcionalidades:
+**Tecnologias Utilizadas**
+Java (JDK 21)
+JPA (Hibernate)
+PostgreSQL (Banco de Dados)
+Java Swing (Interface Gráfica)
+Maven (Gerenciamento de dependências)
 
-Cadastro de fornecedores, produtos e pedidos.
-Consultas aos dados persistidos no banco de dados.
-Relacionamento entre entidades com mapeamento JPA.
-Estrutura das Entidades
-O projeto é estruturado em torno de três entidades principais:
+**Configuração do Banco de Dados**
+Crie um banco de dados no PostgreSQL com o nome ProjetoLPOOE1_Samuel.
 
-Fornecedor: Representa uma empresa ou pessoa que fornece produtos.
-Produto: Representa os itens que podem ser adquiridos de um fornecedor.
-Pedido: Representa uma solicitação de produtos, associada a um fornecedor.
-Conforme ilustrado no diagrama abaixo.
+Atualize as configurações de conexão no arquivo persistence.xml:
 
+**Modelo UML**
 
-Fornecedor
-- id: Long
-- nome: String  
-- endereco: String 
-- telefone: String 
-
-1
-*
-
-Produto
-- id: Long       
-- nome: String   
-- descricao: String 
-- preco: Double  
-- fornecedor: Fornecedor 
-
-1
-*
-
-Pedido       
-- id: Long       
-- data: Date    
-- produto: Produto 
-- quantidade: int
-
-
-*Requisitos*
-
-Java JDK 17 ou superior
-Maven
-PostgreSQL (com pgAdmin opcional para administração do banco de dados)
-Configuração do Banco de Dados
-Este projeto se conecta a um banco de dados PostgreSQL. As configurações de conexão estão localizadas no arquivo application.properties no diretório src/main/resources.
-
-Os testes estão localizados no diretório src/test/java.
-
+![image](https://github.com/user-attachments/assets/dd52dd74-2096-4c4a-b35b-bd138e4e9551)
